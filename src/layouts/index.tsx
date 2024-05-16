@@ -32,11 +32,7 @@ export default function Layout() {
         layout="mix"
         logo={<Icon component={() => <Logo></Logo>} />}
         title="JehChen"
-        avatarProps={{
-          src: 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-          size: 'small',
-          title: 'Jeh',
-        }}
+        avatarProps={{ src: '/Logo.svg', size: 'small', title: 'Jeh' }}
         actionsRender={(props) => {
           if (props.isMobile) return [];
           return [

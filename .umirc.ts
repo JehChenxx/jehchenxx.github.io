@@ -11,6 +11,9 @@ export default defineConfig({
       pathRewrite: { '^/mongo/api': '' },
     },
   },
+  esbuildMinifyIIFE: true,
+  favicons: ['/Logo.svg'],
+  history: { type: 'hash' },
   routes: [
     { path: '/', component: 'index', name: 'Index' },
     {
@@ -26,6 +29,17 @@ export default defineConfig({
       name: 'antd',
       routes: [
         { path: '/antd/products', component: 'products', name: 'products' },
+      ],
+    },
+    {
+      path: '/PinoyFreeCoder',
+      name: 'PinoyFreeCoder',
+      routes: [
+        {
+          path: '/PinoyFreeCoder/index',
+          component: 'PinoyFreeCoder/index',
+          name: 'PinoyFreeCoder',
+        },
       ],
     },
   ],

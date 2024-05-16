@@ -1,15 +1,6 @@
-const Logo = ({ weight = 64 }: { weight?: number }) => {
-  const rect = {
-    rx: '5',
-    ry: '5',
-    style: {
-      fill: 'red',
-      stroke: 'black',
-      strokeSidth: 5,
-      opacity: 0.5,
-    },
-  };
+import { rect, weight } from '@/utils/logo';
 
+const Logo = () => {
   return (
     <svg viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
       <rect {...rect} x="0" y="0" width="512" height={weight} />
