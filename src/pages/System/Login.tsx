@@ -1,9 +1,9 @@
-import { Button, Card, Form, Input, notification, Table } from 'antd';
-import Column from 'antd/es/table/Column';
+import { ACCESS_TOKEN, getUser, loginUrl, setUser } from '@/utils/mongodb';
+import { Button, Card, Form, Input, notification } from 'antd';
 import axios from 'axios';
 import { isEmpty } from 'lodash';
-import { useState } from 'react';
-import { ACCESS_TOKEN, findUrl, loginUrl, setAccesToken } from './mongodb';
+import { useEffect } from 'react';
+import { history } from 'umi';
 
 interface ValueType {
   username: string;
@@ -13,57 +13,49 @@ interface ValueType {
 const Login = () => {
   const [form] = Form.useForm<ValueType>();
 
-  const [exampleData, setExampleData] = useState([]);
-
-  const searchExampleData = (accessToken: string) => {
-    axios
-      .post(
-        findUrl,
-        {
-          collection: 'users',
-          database: 'sample_mflix',
-          dataSource: 'JehChenxx',
-        },
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      )
-      .then(({ data }) => setExampleData(data.documents))
-      .catch(() => notification.error({ message: '查询失败' }));
-  };
+  useEffect(() => {
+    const user = getUser();
+    if (!isEmpty(user)) {
+      history.push('/');
+    }
+  }, []);
 
   const login = (values: ValueType) => {
     axios
       .post(loginUrl, values)
       .then((response) => {
-        setAccesToken(response.data[ACCESS_TOKEN]);
-        searchExampleData(response.data[ACCESS_TOKEN]);
+        setUser(values.username, response.data[ACCESS_TOKEN]);
       })
       .catch(() => notification.error({ message: '登陆失败' }));
   };
 
   return (
-    <>
-      <Form name="login" form={form} onFinish={login}>
-        <Form.Item required label="用户名/邮箱" name="username">
-          <Input allowClear></Input>
-        </Form.Item>
-        <Form.Item required label="密码" name="password">
-          <Input allowClear></Input>
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          确定
-        </Button>
-      </Form>
-      {!isEmpty(exampleData) && (
-        <Card title="数据库示例数据">
-          <Table rowKey="_id" dataSource={exampleData}>
-            <Column title="_id" dataIndex="_id" key="_id" />
-            <Column title="Name" dataIndex="name" key="name" />
-            <Column title="email" dataIndex="email" key="email" />
-            <Column title="password" dataIndex="password" key="password" />
-          </Table>
-        </Card>
-      )}
-    </>
+    <div
+      style={{ width: 512, position: 'absolute', top: '30vh', right: '30vw' }}
+    >
+      <Card title="欢迎登录">
+        <Form
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
+          name="login"
+          form={form}
+          onFinish={login}
+        >
+          <Form.Item required label="用户名/邮箱" name="username">
+            <Input allowClear></Input>
+          </Form.Item>
+          <Form.Item required label="密码" name="password">
+            <Input allowClear></Input>
+          </Form.Item>
+          <div style={{ float: 'right' }}>
+            <Button onClick={() => form.resetFields()}>重置</Button>
+            <Button type="primary" htmlType="submit">
+              确定
+            </Button>
+          </div>
+        </Form>
+      </Card>
+    </div>
   );
 };
 

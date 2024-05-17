@@ -1,9 +1,16 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
-  plugins: ['@umijs/plugins/dist/react-query'],
+  plugins: ['@umijs/plugins/dist/locale', '@umijs/plugins/dist/react-query'],
   reactQuery: {},
   esbuildMinifyIIFE: true,
+  locale: {
+    default: 'zh-CN',
+    antd: true,
+    title: false,
+    baseNavigator: true,
+    baseSeparator: '-',
+  },
   favicons: ['/Logo.svg'],
   history: { type: 'hash' },
   routes: [
