@@ -1,14 +1,14 @@
 import Icon, {
   BulbOutlined,
   BulbTwoTone,
+  LoginOutlined,
   SwitcherTwoTone,
 } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-layout';
 import { ConfigProvider, Input, theme } from 'antd';
 import { createElement, useState } from 'react';
-import { Link, Outlet, useAppData, useLocation } from 'umi';
+import { Link, Outlet, history, useAppData, useLocation } from 'umi';
 import Logo from './Logo';
-import MongoDBAltasKey from './MongoDBAltasKey';
 
 export default function Layout() {
   const { clientRoutes } = useAppData();
@@ -39,7 +39,7 @@ export default function Layout() {
             props.layout !== 'side' && document.body.clientWidth > 1400 ? (
               <Input></Input>
             ) : undefined,
-            <MongoDBAltasKey></MongoDBAltasKey>,
+            <LoginOutlined onClick={() => history.push('/login')} />,
             createElement(algorithmIconList[algorithm], {
               onClick: changeAlgotithm,
             }),

@@ -3,42 +3,58 @@ import { defineConfig } from 'umi';
 export default defineConfig({
   plugins: ['@umijs/plugins/dist/react-query'],
   reactQuery: {},
-  proxy: {
-    '/mongo/api': {
-      target:
-        'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-erhzmlq/endpoint/',
-      changeOrigin: true,
-      pathRewrite: { '^/mongo/api': '' },
-    },
-  },
   esbuildMinifyIIFE: true,
   favicons: ['/Logo.svg'],
   history: { type: 'hash' },
   routes: [
     { path: '/', component: 'index', name: 'Index' },
     {
-      path: '/umi',
-      name: 'umi',
-      routes: [
-        { path: '/umi/index', component: 'umi/index', name: 'home' },
-        { path: '/umi/docs', component: 'umi/docs', name: 'docs' },
-      ],
+      path: '/login',
+      component: 'System/Login',
+      name: 'Login',
+      hideInMenu: true,
     },
     {
-      path: '/antd',
-      name: 'antd',
-      routes: [
-        { path: '/antd/products', component: 'products', name: 'products' },
-      ],
-    },
-    {
-      path: '/PinoyFreeCoder',
-      name: 'PinoyFreeCoder',
+      path: '/example',
+      name: 'Example',
       routes: [
         {
-          path: '/PinoyFreeCoder/index',
-          component: 'PinoyFreeCoder/index',
+          path: '/example/umi',
+          name: 'umi',
+          routes: [
+            {
+              path: '/example/umi/index',
+              component: 'Example/umi/index',
+              name: 'home',
+            },
+            {
+              path: '/example/umi/docs',
+              component: 'Example/umi/docs',
+              name: 'docs',
+            },
+          ],
+        },
+        {
+          path: '/example/antd',
+          name: 'antd',
+          routes: [
+            {
+              path: '/example/antd/products',
+              component: 'Example/antd/products',
+              name: 'products',
+            },
+          ],
+        },
+        {
+          path: '/example/PinoyFreeCoder',
           name: 'PinoyFreeCoder',
+          routes: [
+            {
+              path: '/example/PinoyFreeCoder/index',
+              component: 'Example/PinoyFreeCoder/index',
+              name: 'PinoyFreeCoder',
+            },
+          ],
         },
       ],
     },
