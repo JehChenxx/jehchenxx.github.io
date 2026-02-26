@@ -1,1 +1,1 @@
-"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[707],{24806:function(c,s,u){u.r(s);var e=u(62086),n=function(){return(0,e.jsx)("div",{children:(0,e.jsx)("p",{children:"This is umi docs."})})};s.default=n}}]);
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[707],{98449:function(c,s,u){u.r(s);var e=u(52676),n=function(){return(0,e.jsx)("div",{children:(0,e.jsx)("p",{children:"This is umi docs."})})};s.default=n}}]);
