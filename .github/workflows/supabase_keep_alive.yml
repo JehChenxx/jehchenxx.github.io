@@ -1,0 +1,17 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # 每 3 天的凌晨 0 点运行一次 (UTC 时间)
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # 允许你手动点击按钮触发测试
+
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send API Request to Supabase
+        run: |
+          curl -X GET "${{ secrets.SUPABASE_URL }}/auth/v1/health" \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"

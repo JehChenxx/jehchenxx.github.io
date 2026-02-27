@@ -12,12 +12,17 @@ export default defineConfig({
     baseSeparator: '-',
   },
   favicons: ['/Logo.svg'],
-  history: { type: 'hash' },
+  publicPath: '/',
+  base: '/',
+  hash: true,
+  exportStatic: {},
+  history: { type: 'browser' },
   routes: [
     { path: '/', component: 'index', name: 'Index' },
+    { path: '/home', component: 'Home', name: 'Home', hideInMenu: true },
     {
       path: '/login',
-      component: 'System/Login',
+      component: 'SupaBase/Authentication',
       name: 'Login',
       hideInMenu: true,
     },
@@ -70,6 +75,7 @@ export default defineConfig({
         },
       ],
     },
+    { path: '/*', component: '404' },
   ],
   npmClient: 'pnpm',
 });

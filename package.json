@@ -1,9 +1,10 @@
 {
   "private": true,
   "homepage": "https://jehchenxx.github.io/",
-  "author": "陈祥祥 <chenxiangxiang@eccom.com.cn>",
+  "author": "陈祥祥 <cxx2010@outllook.com>",
   "scripts": {
     "build": "umi build",
+    "predeploy": "npm run build && copy dist\\index.html dist\\404.html",
     "deploy": "gh-pages -d dist",
     "dev": "umi dev",
     "postinstall": "umi setup",
@@ -13,9 +14,13 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
     "@ant-design/pro-layout": "^7.19.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.97.0",
     "@types/lodash": "^4.17.1",
     "antd": "^5.17.2",
     "axios": "^1.6.8",
+    "eslint": "^10.0.2",
     "lodash": "^4.17.21",
     "umi": "^4.2.2"
   },
