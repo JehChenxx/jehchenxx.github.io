@@ -22,6 +22,11 @@ export default defineConfig({
       hideInMenu: true,
     },
     {
+      path: '/tools',
+      component: 'Tools/index',
+      name: 'Tools',
+    },
+    {
       path: '/example',
       name: 'Example',
       routes: [
