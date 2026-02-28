@@ -1,8 +1,9 @@
-import app from '@/locales/en-US/app';
+import app from './en-US/app';
+import auth from './en-US/auth';
+import menu from './en-US/menu';
 
 export default {
-  app,
-  user: {
-    welcome: '{name}, what a nice day!',
-  },
+  ...app,
+  ...auth,
+  ...menu,
 };

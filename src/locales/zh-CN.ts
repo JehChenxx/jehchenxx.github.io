@@ -1,8 +1,9 @@
-import app from '@/locales/zh-CN/app';
+import app from './zh-CN/app';
+import auth from './zh-CN/auth';
+import menu from './zh-CN/menu';
 
 export default {
-  app,
-  user: {
-    welcome: '{name}，今天也是美好的一天！',
-  },
+  ...app,
+  ...auth,
+  ...menu,
 };

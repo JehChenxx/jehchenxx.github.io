@@ -1,8 +1,8 @@
 export default {
-  confirm: 'Confirm',
-  login: 'Login',
-  logout: {
-    '': '登出',
-    confirm: 'Confirm Logout?',
-  },
+  'app.confirm': 'Confirm',
+  'app.login': 'Login',
+  'app.logout': 'Logout',
+  'app.logout.confirm': 'Confirm Logout?',
+  'app.title': 'Jeh App',
+  'app.welcome': '{name}, what a nice day!',
 };

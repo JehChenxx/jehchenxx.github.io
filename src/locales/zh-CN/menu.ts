@@ -1,0 +1,15 @@
+export default {
+  'menu.index': '首页',
+  'menu.home': '主页',
+  'menu.login': '登录',
+  'menu.tools': '工具',
+  'menu.example': '示例',
+  'menu.example.umi': 'Umi 示例',
+  'menu.example.umi.home': 'Umi 首页',
+  'menu.example.umi.docs': 'Umi 文档',
+  'menu.example.antd': 'Antd 示例',
+  'menu.example.antd.products': '产品列表',
+  'menu.example.PinoyFreeCoder': 'PinoyFreeCoder 示例',
+  'menu.example.PinoyFreeCoder.index': 'PinoyFreeCoder 首页',
+  'menu.404': '页面未找到',
+};

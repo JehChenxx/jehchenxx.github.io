@@ -15,5 +15,3 @@ github pages 设置 gh-pages 分支发布（仅需设置一次）
 ## ProLayout
 
 ## axios
-
-## MongoDB Altas Data API

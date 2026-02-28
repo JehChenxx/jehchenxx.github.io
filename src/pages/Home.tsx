@@ -40,20 +40,13 @@ const Home = () => {
     };
   }, []); // 必须有空数组，防止组件渲染时反复执行 checkUser
 
-  // 在你的 Home 页面（即退出按钮所在的页面）
   const handleSignOut = async () => {
-    // 1. 彻底清除 Supabase 端的会话
     const { error } = await supabase.auth.signOut();
-
     if (!error) {
       console.log('退出成功，清理现场...');
-
-      // 2. 清除 URL 中残留的 access_token，防止被 SDK 误认为回拨
       if (window.location.hash) {
         window.history.replaceState(null, '', window.location.pathname);
       }
-
-      // 3. 强制刷新式跳转，确保所有内存里的 SDK 状态重置
       window.location.href = '/login';
     }
   };

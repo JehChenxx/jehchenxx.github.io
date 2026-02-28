@@ -1,6 +1,4 @@
-import MongoDBExample from '@/pages/System/MongoDBExample';
-import { User } from '@/types/User';
-import { getUser, removeUser } from '@/utils/mongodb';
+import supabase from '@/utils/supabase';
 import Icon, {
   BulbOutlined,
   BulbTwoTone,
@@ -10,9 +8,17 @@ import Icon, {
 } from '@ant-design/icons';
 import ProLayout from '@ant-design/pro-layout';
 import { ConfigProvider, Popconfirm, Tooltip, theme } from 'antd';
-import { isNil } from 'lodash';
-import { createElement, useEffect, useState } from 'react';
-import { Link, Outlet, history, useAppData, useIntl, useLocation } from 'umi';
+import { createElement, useState } from 'react';
+import {
+  Link,
+  Outlet,
+  SelectLang,
+  history,
+  useAppData,
+  useIntl,
+  useLocation,
+  useModel,
+} from 'umi';
 import Logo from './Logo';
 
 export default function Layout() {
@@ -21,14 +27,7 @@ export default function Layout() {
   const location = useLocation();
 
   const [algorithm, setAlgorithm] = useState<number>(0);
-  const [user, setUser] = useState<User>();
-
-  useEffect(() => {
-    const tmpUser = getUser();
-    if (!isNil(tmpUser)) {
-      setUser(tmpUser);
-    }
-  }, [getUser()]);
+  const { user } = useModel('user');
 
   const algorithmList = [
     theme.defaultAlgorithm,
@@ -40,29 +39,48 @@ export default function Layout() {
   const changeAlgotithm = () =>
     setAlgorithm((algorithm + 1) % algorithmList.length);
 
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      console.log('退出成功，清理现场...');
+      if (window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+      window.location.href = '/login';
+    }
+  };
+
   return (
     <ConfigProvider theme={{ algorithm: algorithmList[algorithm] }}>
       <ProLayout
+        formatMessage={formatMessage}
+        menu={{ locale: true }}
         layout="mix"
         logo={<Icon component={() => <Logo></Logo>} />}
-        title="Jeh"
+        title={formatMessage({ id: 'app.title' })}
         onMenuHeaderClick={() => history.push('/')}
-        avatarProps={{ src: '/Logo.svg', size: 'small', title: user }}
+        avatarProps={
+          user
+            ? { src: '/Logo.svg', size: 'small', title: user.email }
+            : undefined
+        }
         actionsRender={(props) => {
           if (props.isMobile) return [];
           return [
             props.layout !== 'side' && document.body.clientWidth > 1400
               ? user && (
                   <>
-                    {formatMessage({ id: 'user.welcome' }, { name: user })}
-                    <MongoDBExample></MongoDBExample>
+                    {formatMessage(
+                      { id: 'app.welcome' },
+                      { name: (user.email ?? '').split('@')[0] },
+                    )}
                   </>
                 )
               : undefined,
             user ? (
               <Popconfirm
                 title={formatMessage({ id: 'app.logout.confirm' })}
-                onConfirm={removeUser}
+                onConfirm={handleSignOut}
               >
                 <Tooltip title={formatMessage({ id: 'app.logout.' })}>
                   <LogoutOutlined />
@@ -73,6 +91,7 @@ export default function Layout() {
                 <LoginOutlined onClick={() => history.push('/login')} />
               </Tooltip>
             ),
+            <SelectLang></SelectLang>,
             createElement(algorithmIconList[algorithm], {
               onClick: changeAlgotithm,
             }),

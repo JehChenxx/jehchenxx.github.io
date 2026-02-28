@@ -1,0 +1,15 @@
+export default {
+  'menu.index': 'Home',
+  'menu.home': 'Dashboard',
+  'menu.login': 'Login',
+  'menu.tools': 'Tools',
+  'menu.example': 'Examples',
+  'menu.example.umi': 'Umi Examples',
+  'menu.example.umi.home': 'Umi Home',
+  'menu.example.umi.docs': 'Umi Docs',
+  'menu.example.antd': 'Antd Examples',
+  'menu.example.antd.products': 'Product List',
+  'menu.example.PinoyFreeCoder': 'PinoyFreeCoder Examples',
+  'menu.example.PinoyFreeCoder.index': 'PinoyFreeCoder Home',
+  'menu.404': 'Page Not Found',
+};

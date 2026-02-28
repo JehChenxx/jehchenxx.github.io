@@ -2,9 +2,11 @@ import supabase from '@/utils/supabase';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import React, { useEffect } from 'react';
-import { history } from 'umi';
+import { history, useIntl } from 'umi';
 
 const Authentication = () => {
+  const intl = useIntl();
+
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -36,32 +38,56 @@ const Authentication = () => {
           localization={{
             variables: {
               sign_in: {
-                email_label: '邮箱地址',
-                password_label: '密码',
-                button_label: '登录',
-                loading_button_label: '登录中...',
-                social_provider_text: '使用 {{provider}} 账号登录',
-                link_text: '已有账号？去登录',
+                email_label: intl.formatMessage({ id: 'app.auth.email' }),
+                password_label: intl.formatMessage({ id: 'app.auth.password' }),
+                button_label: intl.formatMessage({ id: 'app.auth.signIn' }),
+                loading_button_label: intl.formatMessage({
+                  id: 'app.auth.signingIn',
+                }),
+                social_provider_text: intl.formatMessage({
+                  id: 'app.auth.socialProvider',
+                }),
+                link_text: intl.formatMessage({
+                  id: 'app.auth.alreadyHaveAccount',
+                }),
               },
               sign_up: {
-                email_label: '邮箱地址',
-                password_label: '创建密码',
-                button_label: '注册',
-                loading_button_label: '注册中...',
-                social_provider_text: '使用 {{provider}} 账号注册',
-                link_text: '没有账号？去注册',
+                email_label: intl.formatMessage({ id: 'app.auth.email' }),
+                password_label: intl.formatMessage({
+                  id: 'app.auth.createPassword',
+                }),
+                button_label: intl.formatMessage({ id: 'app.auth.signUp' }),
+                loading_button_label: intl.formatMessage({
+                  id: 'app.auth.signingUp',
+                }),
+                social_provider_text: intl.formatMessage({
+                  id: 'app.auth.socialProviderSignUp',
+                }),
+                link_text: intl.formatMessage({ id: 'app.auth.noAccount' }),
               },
               forgotten_password: {
-                email_label: '邮箱地址',
-                password_label: '密码',
-                button_label: '发送重置链接',
-                loading_button_label: '发送中...',
-                link_text: '忘记密码？',
+                email_label: intl.formatMessage({ id: 'app.auth.email' }),
+                password_label: intl.formatMessage({ id: 'app.auth.password' }),
+                button_label: intl.formatMessage({
+                  id: 'app.auth.sendResetLink',
+                }),
+                loading_button_label: intl.formatMessage({
+                  id: 'app.auth.sendingResetLink',
+                }),
+                link_text: intl.formatMessage({
+                  id: 'app.auth.forgotPassword',
+                }),
               },
               update_password: {
-                password_label: '新密码',
-                button_label: '更新密码',
-                loading_button_label: '更新中...',
+                password_label: intl.formatMessage({
+                  id: 'app.auth.newPassword',
+                }),
+                button_label: intl.formatMessage({
+                  id: 'app.auth.updatePassword',
+                }),
+                loading_button_label: intl.formatMessage({
+                  id: 'app.auth.updatingPassword',
+                }),
               },
             },
           }}

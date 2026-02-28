@@ -4,8 +4,7 @@
   "author": "陈祥祥 <cxx2010@outllook.com>",
   "scripts": {
     "build": "umi build",
-    "predeploy": "npm run build && copy dist\\index.html dist\\404.html",
-    "deploy": "gh-pages -d dist",
+    "deploy": "npm run build && copy dist\\index.html dist\\404.html && gh-pages -d dist",
     "dev": "umi dev",
     "postinstall": "umi setup",
     "setup": "umi setup",
