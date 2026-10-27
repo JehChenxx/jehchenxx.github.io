@@ -11,5 +11,6 @@ export default {
   'menu.example.antd.products': '产品列表',
   'menu.example.PinoyFreeCoder': 'PinoyFreeCoder 示例',
   'menu.example.PinoyFreeCoder.index': 'PinoyFreeCoder 首页',
+  'menu.siteStats': '网站数据',
   'menu.404': '页面未找到',
 };

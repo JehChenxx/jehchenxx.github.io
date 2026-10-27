@@ -97,6 +97,12 @@ export default defineConfig({
         },
       ],
     },
+    {
+      path: '/site-stats',
+      component: 'SiteStats',
+      name: 'SiteStats',
+      locale: 'menu.siteStats',
+    },
     { path: '/*', component: '404', locale: 'menu.404' },
   ],
   npmClient: 'pnpm',

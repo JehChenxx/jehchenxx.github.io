@@ -1,4 +1,4 @@
-import supabase from '@/utils/supabase';
+﻿import supabase from '@/utils/supabase';
 import Icon, {
   BulbOutlined,
   BulbTwoTone,
@@ -8,7 +8,7 @@ import Icon, {
 } from '@ant-design/icons';
 import ProLayout from '@ant-design/pro-layout';
 import { ConfigProvider, Popconfirm, Tooltip, theme } from 'antd';
-import { createElement, useState } from 'react';
+import { createElement, useEffect, useState } from 'react';
 import {
   Link,
   Outlet,
@@ -28,6 +28,36 @@ export default function Layout() {
 
   const [algorithm, setAlgorithm] = useState<number>(0);
   const { user } = useModel('user');
+  const [visitCount, setVisitCount] = useState<number | null>(null);
+  const [dailyCount, setDailyCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (location.pathname !== '/') return;
+    const STAMP_KEY = 'visit_count_stamp';
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    const run = async () => {
+      const lastStamp = Number(localStorage.getItem(STAMP_KEY) ?? 0);
+      const within24h = Date.now() - lastStamp < TWENTY_FOUR_HOURS;
+      try {
+        const rpc = within24h
+          ? supabase.rpc('get_visit_count')
+          : supabase.rpc('increment_visit_count');
+        const { data } = await rpc;
+        // RETURNS TABLE 模式下 data 是数组，取第一行
+        const row = Array.isArray(data) ? data[0] : (data as any);
+        if (row) {
+          setVisitCount(row.total);
+          setDailyCount(row.daily);
+          if (!within24h) {
+            localStorage.setItem(STAMP_KEY, String(Date.now()));
+          }
+        }
+      } catch (err) {
+        console.error('visit count rpc failed:', err);
+      }
+    };
+    run();
+  }, [location.pathname]);
 
   const algorithmList = [
     theme.defaultAlgorithm,
@@ -72,7 +102,7 @@ export default function Layout() {
                   <>
                     {formatMessage(
                       { id: 'app.welcome' },
-                      { name: (user.email ?? '').split('@')[0] },
+                      { name: (user.email ?? '').split('@')[0] || 'tourist' },
                     )}
                   </>
                 )
@@ -112,7 +142,27 @@ export default function Layout() {
           }
           return defaultDom;
         }}
-        menuFooterRender={() => '@JehChen'}
+        menuFooterRender={() => (
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                textAlign: 'center',
+                fontSize: 'xx-small',
+                color: '#8c8c8c',
+              }}
+            >
+              {dailyCount != null &&
+                formatMessage(
+                  { id: 'siteStatus.dailyVisitCount' },
+                  { count: dailyCount },
+                )}
+              <br></br>
+              {visitCount != null &&
+                formatMessage({ id: 'siteStatus.visitCount' }, { count: visitCount })}
+            </div>
+            <div>@JehChen</div>
+          </div>
+        )}
       >
         <Outlet />
       </ProLayout>

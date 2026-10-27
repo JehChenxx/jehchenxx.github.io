@@ -19,6 +19,8 @@
     "@types/lodash": "^4.17.1",
     "antd": "^5.17.2",
     "axios": "^1.6.8",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
     "eslint": "^10.0.2",
     "lodash": "^4.17.21",
     "umi": "^4.2.2"

@@ -11,5 +11,6 @@ export default {
   'menu.example.antd.products': 'Product List',
   'menu.example.PinoyFreeCoder': 'PinoyFreeCoder Examples',
   'menu.example.PinoyFreeCoder.index': 'PinoyFreeCoder Home',
+  'menu.siteStats': 'Site Stats',
   'menu.404': 'Page Not Found',
 };
