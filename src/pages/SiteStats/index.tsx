@@ -1,4 +1,4 @@
-﻿import supabase from '@/utils/supabase';
+﻿import supabase from '@/supabase/client';
 import {
   ArrowUpOutlined,
   EyeOutlined,

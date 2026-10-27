@@ -1,4 +1,5 @@
-﻿import supabase from '@/utils/supabase';
+﻿import supabase from '@/supabase/client';
+import { trackVisit } from '@/supabase/visitStats';
 import Icon, {
   BulbOutlined,
   BulbTwoTone,
@@ -33,30 +34,12 @@ export default function Layout() {
 
   useEffect(() => {
     if (location.pathname !== '/') return;
-    const STAMP_KEY = 'visit_count_stamp';
-    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-    const run = async () => {
-      const lastStamp = Number(localStorage.getItem(STAMP_KEY) ?? 0);
-      const within24h = Date.now() - lastStamp < TWENTY_FOUR_HOURS;
-      try {
-        const rpc = within24h
-          ? supabase.rpc('get_visit_count')
-          : supabase.rpc('increment_visit_count');
-        const { data } = await rpc;
-        // RETURNS TABLE 模式下 data 是数组，取第一行
-        const row = Array.isArray(data) ? data[0] : (data as any);
-        if (row) {
-          setVisitCount(row.total);
-          setDailyCount(row.daily);
-          if (!within24h) {
-            localStorage.setItem(STAMP_KEY, String(Date.now()));
-          }
-        }
-      } catch (err) {
-        console.error('visit count rpc failed:', err);
+    trackVisit().then((counts) => {
+      if (counts) {
+        setVisitCount(counts.total);
+        setDailyCount(counts.daily);
       }
-    };
-    run();
+    });
   }, [location.pathname]);
 
   const algorithmList = [

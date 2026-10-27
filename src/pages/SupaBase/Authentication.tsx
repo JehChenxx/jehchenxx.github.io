@@ -1,4 +1,4 @@
-import supabase from '@/utils/supabase';
+﻿import supabase from '@/supabase/client';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import React, { useEffect } from 'react';

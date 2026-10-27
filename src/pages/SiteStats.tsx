@@ -1,4 +1,8 @@
-﻿import supabase from '@/utils/supabase';
+﻿import {
+  getDailyVisitHistory,
+  getVisitCounts,
+  type DailyVisitRow,
+} from '@/supabase/visitStats';
 import {
   ArrowUpOutlined,
   EyeOutlined,
@@ -12,54 +16,25 @@ import { useIntl } from 'umi';
 
 const DAYS = 14;
 
-type DailyRow = { date: string; count: number };
-
-const fillMissingDates = (rows: DailyRow[], days: number): DailyRow[] => {
-  const map = new Map(rows.map((r) => [r.date, r.count]));
-  const out: DailyRow[] = [];
-  const today = new Date();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    out.push({ date: key, count: map.get(key) ?? 0 });
-  }
-  return out;
-};
-
 const SiteStats = () => {
   const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [daily, setDaily] = useState(0);
-  const [history, setHistory] = useState<DailyRow[]>([]);
+  const [history, setHistory] = useState<DailyVisitRow[]>([]);
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
-    try {
-      const [countRes, histRes] = await Promise.all([
-        supabase.rpc('get_visit_count'),
-        supabase.rpc('get_daily_visit_history', { days: DAYS }),
-      ]);
-      const countRow = Array.isArray(countRes.data)
-        ? countRes.data[0]
-        : (countRes.data as any);
-      if (countRow) {
-        setTotal(countRow.total ?? 0);
-        setDaily(countRow.daily ?? 0);
-      }
-      const list: DailyRow[] = Array.isArray(histRes.data)
-        ? histRes.data.map((r: any) => ({
-            date: r.visit_date,
-            count: r.visit_count,
-          }))
-        : [];
-      setHistory(fillMissingDates(list, DAYS));
-    } catch (err) {
-      console.error('site stats rpc failed:', err);
-    } finally {
-      setLoading(false);
+    const [counts, list] = await Promise.all([
+      getVisitCounts(),
+      getDailyVisitHistory(DAYS),
+    ]);
+    if (counts) {
+      setTotal(counts.total);
+      setDaily(counts.daily);
     }
+    setHistory(list);
+    setLoading(false);
   }, []);
 
   useEffect(() => {

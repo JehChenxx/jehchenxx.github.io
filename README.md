@@ -1,10 +1,10 @@
 ## Umi Simple App
 
-## gh-pages
-
 build: umi build pnpm build
 
-run deploy: gh-pages -d dist pnpm run deploy
+## gh-pages
+
+"build-deploy": "npm run build && copy dist\\index.html dist\\404.html && gh-pages -d dist", "deploy": "copy dist\\index.html dist\\404.html && gh-pages -d dist",
 
 github pages 设置 gh-pages 分支发布（仅需设置一次）
 

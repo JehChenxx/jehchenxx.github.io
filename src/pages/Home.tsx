@@ -1,4 +1,4 @@
-import supabase from '@/utils/supabase';
+﻿import supabase from '@/supabase/client';
 import { User } from '@supabase/supabase-js';
 import React, { useEffect, useState } from 'react';
 import SupaBaseExample from './System/SupaBaseExample';
