@@ -14,8 +14,6 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
     "@ant-design/pro-layout": "^7.19.0",
-    "@supabase/auth-ui-react": "^0.4.7",
-    "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.97.0",
     "@types/lodash": "^4.17.1",
     "antd": "^5.17.2",
