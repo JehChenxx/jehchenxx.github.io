@@ -16,7 +16,7 @@ export default defineConfig({
     baseNavigator: true,
     baseSeparator: '-',
   },
-  favicons: ['/Logo.svg'],
+  favicons: ['/Logo.png'],
   publicPath: '/',
   base: '/',
   hash: true,

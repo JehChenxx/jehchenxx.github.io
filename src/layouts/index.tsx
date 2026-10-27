@@ -19,7 +19,7 @@ import {
   useLocation,
   useModel,
 } from 'umi';
-import Logo from './Logo';
+import LogoPNG from './LogoPNG';
 
 export default function Layout() {
   const { clientRoutes } = useAppData();
@@ -56,7 +56,7 @@ export default function Layout() {
         formatMessage={formatMessage}
         menu={{ locale: true }}
         layout="mix"
-        logo={<Icon component={() => <Logo></Logo>} />}
+        logo={<Icon component={() => <LogoPNG />} />}
         title={formatMessage({ id: 'app.title' })}
         onMenuHeaderClick={() => history.push('/')}
         avatarProps={
