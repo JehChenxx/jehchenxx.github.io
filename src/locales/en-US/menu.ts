@@ -2,6 +2,7 @@ export default {
   'menu.index': 'Home',
   'menu.home': 'Dashboard',
   'menu.login': 'Login',
+  'menu.account': 'Account',
   'menu.tools': 'Tools',
   'menu.example': 'Examples',
   'menu.example.umi': 'Umi Examples',

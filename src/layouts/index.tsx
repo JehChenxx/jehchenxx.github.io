@@ -1,15 +1,17 @@
 ﻿import supabase from '@/supabase/client';
 import { trackVisit } from '@/supabase/visitStats';
 import Icon, {
-  BulbOutlined,
-  BulbTwoTone,
+  ColumnHeightOutlined,
+  ColumnWidthOutlined,
   LoginOutlined,
   LogoutOutlined,
-  SwitcherTwoTone,
+  MoonOutlined,
+  SunOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import ProLayout from '@ant-design/pro-layout';
-import { ConfigProvider, Popconfirm, Tooltip, theme } from 'antd';
-import { createElement, useEffect, useState } from 'react';
+import { Avatar, ConfigProvider, Dropdown, Modal, Tooltip, theme } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Link,
   Outlet,
@@ -27,10 +29,17 @@ export default function Layout() {
   const { formatMessage } = useIntl();
   const location = useLocation();
 
-  const [algorithm, setAlgorithm] = useState<number>(0);
+  const [isDark, setIsDark] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
   const { user } = useModel('user');
   const [visitCount, setVisitCount] = useState<number | null>(null);
   const [dailyCount, setDailyCount] = useState<number | null>(null);
+
+  const WELCOME_COUNT = 8;
+  const welcomeIndex = useMemo(
+    () => Math.floor(Math.random() * WELCOME_COUNT),
+    [location.pathname],
+  );
 
   useEffect(() => {
     if (location.pathname !== '/') return;
@@ -42,29 +51,30 @@ export default function Layout() {
     });
   }, [location.pathname]);
 
-  const algorithmList = [
+  const algorithm = [
     theme.defaultAlgorithm,
-    theme.darkAlgorithm,
-    theme.compactAlgorithm,
+    ...(isDark ? [theme.darkAlgorithm] : []),
+    ...(isCompact ? [theme.compactAlgorithm] : []),
   ];
-  const algorithmIconList = [BulbTwoTone, BulbOutlined, SwitcherTwoTone];
-
-  const changeAlgotithm = () =>
-    setAlgorithm((algorithm + 1) % algorithmList.length);
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      console.log('退出成功，清理现场...');
-      if (window.location.hash) {
-        window.history.replaceState(null, '', window.location.pathname);
-      }
-      window.location.href = '/login';
-    }
+    Modal.confirm({
+      title: formatMessage({ id: 'app.logout.confirm' }),
+      okText: formatMessage({ id: 'app.confirm' }),
+      async onOk() {
+        const { error } = await supabase.auth.signOut();
+        if (!error) {
+          if (window.location.hash) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
+          window.location.href = '/login';
+        }
+      },
+    });
   };
 
   return (
-    <ConfigProvider theme={{ algorithm: algorithmList[algorithm] }}>
+    <ConfigProvider theme={{ algorithm }}>
       <ProLayout
         formatMessage={formatMessage}
         menu={{ locale: true }}
@@ -72,42 +82,78 @@ export default function Layout() {
         logo={<Icon component={() => <LogoPNG />} />}
         title={formatMessage({ id: 'app.title' })}
         onMenuHeaderClick={() => history.push('/')}
-        avatarProps={
-          user
-            ? { src: '/Logo.svg', size: 'small', title: user.email }
-            : undefined
-        }
         actionsRender={(props) => {
           if (props.isMobile) return [];
           return [
             props.layout !== 'side' && document.body.clientWidth > 1400
-              ? user && (
-                  <>
-                    {formatMessage(
-                      { id: 'app.welcome' },
-                      { name: (user.email ?? '').split('@')[0] || 'tourist' },
-                    )}
-                  </>
-                )
+              ? user && formatMessage({ id: `app.welcome.${welcomeIndex}` })
               : undefined,
             user ? (
-              <Popconfirm
-                title={formatMessage({ id: 'app.logout.confirm' })}
-                onConfirm={handleSignOut}
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: 'account',
+                      icon: <UserOutlined />,
+                      label: formatMessage({ id: 'app.menu.account' }),
+                      onClick: () => history.push('/account'),
+                    },
+                    { type: 'divider' },
+                    {
+                      key: 'logout',
+                      icon: <LogoutOutlined />,
+                      label: formatMessage({ id: 'app.logout' }),
+                      onClick: handleSignOut,
+                    },
+                  ],
+                }}
+                trigger={['hover']}
               >
-                <Tooltip title={formatMessage({ id: 'app.logout.' })}>
-                  <LogoutOutlined />
-                </Tooltip>
-              </Popconfirm>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <Avatar
+                    size="small"
+                    shape="circle"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {(() => {
+                      const name =
+                        user?.user_metadata?.username ||
+                        (user?.email ?? '').split('@')[0] ||
+                        '?';
+                      return name.charAt(0).toUpperCase();
+                    })()}
+                  </Avatar>
+                  {user?.user_metadata?.username ||
+                    (user?.email ?? '').split('@')[0] ||
+                    'tourist'}
+                </span>
+              </Dropdown>
             ) : (
               <Tooltip title={formatMessage({ id: 'app.login' })}>
                 <LoginOutlined onClick={() => history.push('/login')} />
               </Tooltip>
             ),
             <SelectLang></SelectLang>,
-            createElement(algorithmIconList[algorithm], {
-              onClick: changeAlgotithm,
-            }),
+            <Tooltip title={isDark ? 'Light' : 'Dark'}>
+              {isDark ? (
+                <SunOutlined onClick={() => setIsDark(false)} />
+              ) : (
+                <MoonOutlined onClick={() => setIsDark(true)} />
+              )}
+            </Tooltip>,
+            <Tooltip title={isCompact ? 'Default' : 'Compact'}>
+              {isCompact ? (
+                <ColumnWidthOutlined onClick={() => setIsCompact(false)} />
+              ) : (
+                <ColumnHeightOutlined onClick={() => setIsCompact(true)} />
+              )}
+            </Tooltip>,
           ];
         }}
         route={clientRoutes[0]}
@@ -141,9 +187,12 @@ export default function Layout() {
                 )}
               <br></br>
               {visitCount != null &&
-                formatMessage({ id: 'siteStatus.visitCount' }, { count: visitCount })}
+                formatMessage(
+                  { id: 'siteStatus.visitCount' },
+                  { count: visitCount },
+                )}
             </div>
-            <div>@JehChen</div>
+            <div>@J.C</div>
           </div>
         )}
       >

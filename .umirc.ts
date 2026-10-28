@@ -40,6 +40,13 @@ export default defineConfig({
       locale: 'menu.login',
     },
     {
+      path: '/account',
+      component: 'Account/index',
+      name: 'Account',
+      hideInMenu: true,
+      locale: 'menu.account',
+    },
+    {
       path: '/tools',
       component: 'Tools/index',
       name: 'Tools',

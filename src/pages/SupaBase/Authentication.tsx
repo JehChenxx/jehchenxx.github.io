@@ -1,5 +1,10 @@
-﻿import supabase from '@/supabase/client';
-import { GithubOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import supabase from '@/supabase/client';
+import {
+  GithubOutlined,
+  LockOutlined,
+  MailOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Button, Divider, Form, Input, Spin, Typography, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { history, useIntl } from 'umi';
@@ -18,18 +23,28 @@ const Authentication = () => {
   const [view, setView] = useState<AuthView>('sign_in');
   const [submitting, setSubmitting] = useState(false);
   const [socialRedirecting, setSocialRedirecting] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [form] = Form.useForm();
 
   useEffect(() => {
+    // mount 时同步处理三种入口状态，避免 OAuth 回调回来先闪表单再跳转
     const hash = window.location.hash;
     const url = new URL(
       hash.startsWith('#') ? hash.slice(1) : hash,
       window.location.origin,
     );
     const type = url.searchParams.get('type');
-    if (type === 'recovery') {
-      setView('update_password');
-    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (type === 'recovery') {
+        setView('update_password');
+      } else if (session) {
+        // OAuth / callback 回来 session 已经在了，直接走路由跳转，不等 onAuthStateChange
+        history.push('/home');
+        return;
+      }
+      setInitializing(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -55,7 +70,11 @@ const Authentication = () => {
     };
   }, []);
 
-  const handleSubmit = async (values: { email: string; password?: string }) => {
+  const handleSubmit = async (values: {
+    email: string;
+    password?: string;
+    username?: string;
+  }) => {
     setSubmitting(true);
     try {
       if (view === 'sign_in') {
@@ -68,37 +87,23 @@ const Authentication = () => {
         const { error } = await supabase.auth.signUp({
           email: values.email,
           password: values.password!,
+          options: { data: { username: values.username?.trim() } },
         });
         if (error) throw error;
-        message.success(
-          intl.formatMessage({
-            id: 'app.auth.confirmation',
-            defaultMessage: '注册成功，请查收验证邮件',
-          }),
-        );
+        message.success(intl.formatMessage({ id: 'auth.confirmation' }));
       } else if (view === 'forgotten_password') {
         const { error } = await supabase.auth.resetPasswordForEmail(
           values.email,
           { redirectTo: REDIRECT_URL },
         );
         if (error) throw error;
-        message.success(
-          intl.formatMessage({
-            id: 'app.auth.sentResetLink',
-            defaultMessage: '重置链接已发送，请查收邮件',
-          }),
-        );
+        message.success(intl.formatMessage({ id: 'auth.sentResetLink' }));
       } else if (view === 'update_password') {
         const { error } = await supabase.auth.updateUser({
           password: values.password!,
         });
         if (error) throw error;
-        message.success(
-          intl.formatMessage({
-            id: 'app.auth.passwordUpdated',
-            defaultMessage: '密码已更新',
-          }),
-        );
+        message.success(intl.formatMessage({ id: 'auth.passwordUpdated' }));
         setView('sign_in');
         form.resetFields();
       }
@@ -111,17 +116,17 @@ const Authentication = () => {
 
   const handleGitHub = async () => {
     setSocialRedirecting(true);
-    try {
+    // 下一帧再触发跳转，让 overlay 先上屏
+    requestAnimationFrame(async () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: { redirectTo: REDIRECT_URL },
       });
-      if (error) throw error;
-      // 这里不 reset，OAuth 会立刻跳转，让 loading 保持到页面离开
-    } catch (err: any) {
-      setSocialRedirecting(false);
-      message.error(err?.message || 'Unknown error');
-    }
+      if (error) {
+        message.error(error.message);
+        setSocialRedirecting(false);
+      }
+    });
   };
 
   const switchView = (next: AuthView) => {
@@ -130,14 +135,36 @@ const Authentication = () => {
     form.resetFields();
   };
 
-  const i18n = (id: string, defaultMessage?: string) =>
-    intl.formatMessage({ id, defaultMessage });
+  const i18n = (id: string) => intl.formatMessage({ id });
 
   const showEmail = view !== 'update_password';
+  const showUsername = view === 'sign_up';
   const showPassword =
     view === 'sign_in' || view === 'sign_up' || view === 'update_password';
 
   const disabled = submitting || socialRedirecting;
+
+  if (socialRedirecting || initializing) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+        }}
+      >
+        <Spin
+          size="large"
+          tip={intl.formatMessage({
+            id: socialRedirecting ? 'auth.redirecting' : 'auth.initializing',
+          })}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -148,164 +175,168 @@ const Authentication = () => {
         minHeight: '80vh',
       }}
     >
-      <Spin
-        spinning={socialRedirecting}
-        tip={intl.formatMessage({
-          id: 'app.auth.redirecting',
-          defaultMessage: '正在跳转...',
-        })}
-      >
-        <div style={{ width: 380, padding: '24px' }}>
-          <Typography.Title level={3} style={{ textAlign: 'center' }}>
-            {view === 'sign_in' && i18n('app.auth.signIn', '登录')}
-            {view === 'sign_up' && i18n('app.auth.signUp', '注册')}
-            {view === 'forgotten_password' &&
-              i18n('app.auth.forgotPassword', '忘记密码')}
-            {view === 'update_password' &&
-              i18n('app.auth.updatePassword', '更新密码')}
-          </Typography.Title>
+      <div style={{ width: 380, padding: '24px' }}>
+        <Typography.Title level={3} style={{ textAlign: 'center' }}>
+          {view === 'sign_in' && i18n('auth.signIn')}
+          {view === 'sign_up' && i18n('auth.signUp')}
+          {view === 'forgotten_password' && i18n('auth.forgotPassword')}
+          {view === 'update_password' && i18n('auth.updatePassword')}
+        </Typography.Title>
 
-          <Button
-            block
-            icon={<GithubOutlined />}
-            loading={socialRedirecting}
-            disabled={submitting}
-            onClick={handleGitHub}
-          >
-            {view === 'sign_up'
-              ? intl.formatMessage(
-                  { id: 'app.auth.socialProviderSignUp' },
-                  { provider: PROVIDER },
-                )
-              : intl.formatMessage(
-                  { id: 'app.auth.socialProvider' },
-                  { provider: PROVIDER },
-                )}
-          </Button>
+        <Button
+          block
+          icon={<GithubOutlined />}
+          loading={socialRedirecting}
+          disabled={submitting}
+          onClick={handleGitHub}
+        >
+          {view === 'sign_up'
+            ? intl.formatMessage(
+                { id: 'auth.socialProviderSignUp' },
+                { provider: PROVIDER },
+              )
+            : intl.formatMessage(
+                { id: 'auth.socialProvider' },
+                { provider: PROVIDER },
+              )}
+        </Button>
 
-          {view !== 'update_password' && (
-            <Divider plain>
-              {intl.formatMessage({
-                id: 'app.auth.or',
-                defaultMessage: '或使用邮箱',
-              })}
-            </Divider>
+        {view !== 'update_password' && (
+          <Divider plain>{i18n('auth.or')}</Divider>
+        )}
+
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          requiredMark={false}
+          disabled={disabled}
+        >
+          {showEmail && (
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true },
+                { type: 'email', message: 'Invalid email' },
+              ]}
+            >
+              <Input
+                prefix={<MailOutlined />}
+                placeholder={i18n('auth.email')}
+                autoComplete="email"
+              />
+            </Form.Item>
           )}
 
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleSubmit}
-            requiredMark={false}
-            disabled={disabled}
-          >
-            {showEmail && (
-              <Form.Item
-                name="email"
-                rules={[
-                  { required: true },
-                  { type: 'email', message: 'Invalid email' },
-                ]}
-              >
-                <Input
-                  prefix={<MailOutlined />}
-                  placeholder={i18n('app.auth.email')}
-                  autoComplete="email"
-                />
-              </Form.Item>
-            )}
-
-            {showPassword && (
-              <Form.Item
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    min: 6,
-                    message: i18n('app.auth.passwordMin', '密码至少 6 位'),
-                  },
-                ]}
-              >
-                <Input.Password
-                  prefix={<LockOutlined />}
-                  placeholder={
-                    view === 'update_password'
-                      ? i18n('app.auth.newPassword')
-                      : view === 'sign_up'
-                      ? i18n('app.auth.createPassword')
-                      : i18n('app.auth.password')
-                  }
-                  autoComplete={
-                    view === 'sign_in' ? 'current-password' : 'new-password'
-                  }
-                />
-              </Form.Item>
-            )}
-
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                block
-                loading={submitting}
-                disabled={socialRedirecting}
-              >
-                {view === 'sign_in' && i18n('app.auth.signIn')}
-                {view === 'sign_up' && i18n('app.auth.signUp')}
-                {view === 'forgotten_password' &&
-                  i18n('app.auth.sendResetLink')}
-                {view === 'update_password' && i18n('app.auth.updatePassword')}
-              </Button>
+          {showUsername && (
+            <Form.Item
+              name="username"
+              rules={[
+                { required: true, message: i18n('auth.usernameRequired') },
+                {
+                  min: 2,
+                  max: 32,
+                  message: i18n('auth.usernameRange'),
+                },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined />}
+                placeholder={i18n('auth.username')}
+                autoComplete="username"
+              />
             </Form.Item>
-          </Form>
+          )}
 
-          <div
-            style={{
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-          >
-            {view === 'sign_in' && (
-              <>
-                <Button
-                  type="link"
-                  disabled={disabled}
-                  onClick={() => switchView('forgotten_password')}
-                >
-                  {i18n('app.auth.forgotPassword')}
-                </Button>
-                <Button
-                  type="link"
-                  disabled={disabled}
-                  onClick={() => switchView('sign_up')}
-                >
-                  {i18n('app.auth.noAccount')}
-                </Button>
-              </>
-            )}
-            {view === 'sign_up' && (
+          {showPassword && (
+            <Form.Item
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  min: 6,
+                  message: i18n('auth.passwordMin'),
+                },
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder={
+                  view === 'update_password'
+                    ? i18n('auth.newPassword')
+                    : view === 'sign_up'
+                    ? i18n('auth.createPassword')
+                    : i18n('auth.password')
+                }
+                autoComplete={
+                  view === 'sign_in' ? 'current-password' : 'new-password'
+                }
+              />
+            </Form.Item>
+          )}
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              loading={submitting}
+              disabled={socialRedirecting}
+            >
+              {view === 'sign_in' && i18n('auth.signIn')}
+              {view === 'sign_up' && i18n('auth.signUp')}
+              {view === 'forgotten_password' && i18n('auth.sendResetLink')}
+              {view === 'update_password' && i18n('auth.updatePassword')}
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <div
+          style={{
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+          }}
+        >
+          {view === 'sign_in' && (
+            <>
               <Button
                 type="link"
                 disabled={disabled}
-                onClick={() => switchView('sign_in')}
+                onClick={() => switchView('forgotten_password')}
               >
-                {i18n('app.auth.alreadyHaveAccount')}
+                {i18n('auth.forgotPassword')}
               </Button>
-            )}
-            {view === 'forgotten_password' && (
               <Button
                 type="link"
                 disabled={disabled}
-                onClick={() => switchView('sign_in')}
+                onClick={() => switchView('sign_up')}
               >
-                {i18n('app.auth.backToSignIn', '返回登录')}
+                {i18n('auth.noAccount')}
               </Button>
-            )}
-          </div>
+            </>
+          )}
+          {view === 'sign_up' && (
+            <Button
+              type="link"
+              disabled={disabled}
+              onClick={() => switchView('sign_in')}
+            >
+              {i18n('auth.alreadyHaveAccount')}
+            </Button>
+          )}
+          {view === 'forgotten_password' && (
+            <Button
+              type="link"
+              disabled={disabled}
+              onClick={() => switchView('sign_in')}
+            >
+              {i18n('auth.backToSignIn')}
+            </Button>
+          )}
         </div>
-      </Spin>
+      </div>
     </div>
   );
 };

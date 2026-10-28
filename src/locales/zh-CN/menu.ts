@@ -2,6 +2,7 @@ export default {
   'menu.index': '首页',
   'menu.home': '主页',
   'menu.login': '登录',
+  'menu.account': '个人信息',
   'menu.tools': '工具',
   'menu.example': '示例',
   'menu.example.umi': 'Umi 示例',

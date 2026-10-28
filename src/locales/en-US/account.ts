@@ -1,0 +1,17 @@
+export default {
+  'account.title': 'Account',
+  'account.basicInfo': 'Basic Info',
+  'account.email': 'Email',
+  'account.userId': 'User ID',
+  'account.createdAt': 'Created At',
+  'account.lastSignIn': 'Last Sign In',
+  'account.changeUsername': 'Change Username',
+  'account.usernameUpdated': 'Username updated',
+  'account.changePassword': 'Change Password',
+  'account.newPassword': 'New Password',
+  'account.confirmPassword': 'Confirm New Password',
+  'account.confirmPasswordRequired': 'Please confirm your new password',
+  'account.passwordMismatch': 'Passwords do not match',
+  'account.passwordUpdated': 'Password updated',
+  'account.oauthHint': 'Password change is not available for social accounts. Please manage it on the provider side.',
+};
