@@ -4,7 +4,7 @@ build: umi build pnpm build
 
 ## gh-pages
 
-"build-deploy": "npm run build && copy dist\\index.html dist\\404.html && gh-pages -d dist", "deploy": "copy dist\\index.html dist\\404.html && gh-pages -d dist",
+"deploy": "npm run build && copy dist\\index.html dist\\404.html && gh-pages -d dist", "deploy":
 
 github pages 设置 gh-pages 分支发布（仅需设置一次）
 

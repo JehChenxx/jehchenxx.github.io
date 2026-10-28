@@ -148,7 +148,7 @@ const SiteStats = () => {
         </Col>
         <Col xs={24} sm={12}>
           <Card
-            bordered={false}
+            variant="borderless"
             style={{
               background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
             }}

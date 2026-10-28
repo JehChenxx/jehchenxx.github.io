@@ -40,7 +40,7 @@ const Authentication = () => {
         setView('update_password');
       } else if (session) {
         // OAuth / callback 回来 session 已经在了，直接走路由跳转，不等 onAuthStateChange
-        history.push('/home');
+        history.push('/dashboard');
         return;
       }
       setInitializing(false);
@@ -60,7 +60,7 @@ const Authentication = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === 'SIGNED_IN' && session && !isRecovery()) {
-          history.push('/home');
+          history.push('/dashboard');
         }
       },
     );

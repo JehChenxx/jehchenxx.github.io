@@ -26,18 +26,40 @@ export default defineConfig({
   routes: [
     { path: '/', component: 'index', name: 'Index', locale: 'menu.index' },
     {
-      path: '/home',
-      component: 'Home',
-      name: 'Home',
-      hideInMenu: true,
-      locale: 'menu.home',
-    },
-    {
       path: '/login',
       component: 'SupaBase/Authentication',
       name: 'Login',
       hideInMenu: true,
       locale: 'menu.login',
+    },
+    {
+      path: '/dashboard',
+      component: 'Dashboard/Layout',
+      name: 'Dashboard',
+      locale: 'menu.dashboard',
+      routes: [
+        {
+          path: '/dashboard/home',
+          component: 'Dashboard/Home',
+          hideInMenu: true,
+          name: 'Home',
+          locale: 'menu.dashboard.home',
+        },
+        {
+          path: '/dashboard/blog',
+          component: 'Dashboard/Blog',
+          hideInMenu: true,
+          name: 'Blog',
+          locale: 'menu.dashboard.blog',
+        },
+        {
+          path: '/dashboard/account',
+          component: 'Account/index',
+          hideInMenu: true,
+          name: 'Account',
+          locale: 'menu.dashboard.account',
+        },
+      ],
     },
     {
       path: '/account',

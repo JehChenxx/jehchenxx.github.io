@@ -1,3 +1,35 @@
 .ant-pro-global-header-header-actions-item > *:hover {
   background-color: transparent !important;
 }
+
+.ant-pro-layout .ant-pro-layout-content {
+  padding-block: 0 !important;
+  padding-inline: 0 !important;
+}
+
+/* 隐藏所有滚动条（保留滚动功能） */
+* {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge Legacy */
+}
+*::-webkit-scrollbar {
+  display: none;                  /* Chrome/Safari/Edge Chromium */
+  width: 0;
+  height: 0;
+}
+
+@keyframes float-down {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.55; }
+  50%      { transform: translateX(-50%) translateY(4px); opacity: 1; }
+}
+
+/* Todo 卡片内 antd 组件统一透明化 */
+.todo-card .ant-list-item,
+.todo-card .ant-list-item:hover,
+.todo-card .ant-checkbox-wrapper,
+.todo-card .ant-checkbox-wrapper:hover {
+  background: transparent !important;
+}
+.todo-card .ant-checkbox-inner {
+  background: rgba(255,255,255,0.45);
+}
