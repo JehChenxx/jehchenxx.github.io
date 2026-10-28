@@ -101,7 +101,7 @@ const SiteStats = () => {
   return (
     <div
       style={{
-        height: 'calc(100vh - 160px)',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         gap: 16,
@@ -171,8 +171,8 @@ const SiteStats = () => {
           <Card
             title={formatMessage({ id: 'siteStatus.dailyVisitCount' })}
             extra={<EyeOutlined />}
-            style={{ height: '100%' }}
-            bodyStyle={{ height: 'calc(100% - 57px)', padding: 16 }}
+            style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            bodyStyle={{ flex: 1, minHeight: 0, padding: 16 }}
           >
             <ReactECharts
               option={barOption}
@@ -186,8 +186,8 @@ const SiteStats = () => {
           <Card
             title={formatMessage({ id: 'siteStatus.visitCount' })}
             extra={<ArrowUpOutlined />}
-            style={{ height: '100%' }}
-            bodyStyle={{ height: 'calc(100% - 57px)', padding: 16 }}
+            style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            bodyStyle={{ flex: 1, minHeight: 0, padding: 16 }}
           >
             <ReactECharts
               option={lineOption}

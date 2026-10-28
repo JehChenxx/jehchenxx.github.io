@@ -110,8 +110,8 @@ const DashboardHome: React.FC = () => {
   const doneCount = todos.filter((t) => t.done).length;
 
   return (
-    <Row justify="end">
-      <Col span={6}>
+    <Row justify="end" style={{ height: '100%' }}>
+      <Col span={6} style={{ height: '100%', display: 'flex' }}>
         <Card
           variant="borderless"
           title={
@@ -133,8 +133,19 @@ const DashboardHome: React.FC = () => {
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             position: 'relative',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
           }}
-          styles={{ body: { background: 'transparent' } }}
+          bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+          styles={{
+            body: {
+              background: 'transparent',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+            },
+          }}
           extra={
             <Button size="small" onClick={clearDone} disabled={!doneCount}>
               {intl.formatMessage({ id: 'dashboard.todo.clearDone' })}
@@ -170,7 +181,8 @@ const DashboardHome: React.FC = () => {
             ref={listRef}
             onScroll={checkOverflow}
             style={{
-              height: 'calc(100vh - 320px)',
+              flex: 1,
+              minHeight: 0,
               overflowY: 'auto',
               scrollBehavior: 'smooth',
             }}

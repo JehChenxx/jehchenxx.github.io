@@ -54,7 +54,7 @@ const DashboardLayout: React.FC = () => {
     <div
       style={{
         position: 'relative',
-        height: 'calc(100vh - 72px)',
+        height: '100%',
         overflow: 'hidden',
       }}
     >

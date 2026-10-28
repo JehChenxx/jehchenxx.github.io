@@ -423,7 +423,7 @@ const Index = () => {
       style={{
         position: 'relative',
         width: '100%',
-        height: 'calc(100vh - 140px)',
+        height: '100%',
       }}
     >
       <div style={{ position: 'absolute', top: 8, right: 12, zIndex: 10 }}>
