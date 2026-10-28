@@ -15,12 +15,14 @@
     "@ant-design/pro-layout": "^7.19.0",
     "@supabase/supabase-js": "^2.97.0",
     "@types/lodash": "^4.17.1",
+    "@types/three": "^0.186.0",
     "antd": "^5.17.2",
     "axios": "^1.6.8",
     "echarts": "^6.1.0",
     "echarts-for-react": "^3.0.6",
     "eslint": "^10.0.2",
     "lodash": "^4.17.21",
+    "three": "^0.186.1",
     "umi": "^4.2.2"
   },
   "devDependencies": {
