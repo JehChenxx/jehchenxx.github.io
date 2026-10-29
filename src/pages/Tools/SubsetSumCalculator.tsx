@@ -114,7 +114,7 @@ const SubsetSumCalculator: React.FC = () => {
         </>
       }
     >
-      <Space direction="vertical" style={{ width: '100%' }} size="large">
+      <Space orientation="vertical" style={{ width: '100%' }} size="large">
         <div>
           <Text strong>待选数字集合(空格/中文逗号/英文逗号分隔):</Text>
           <TextArea
@@ -163,7 +163,7 @@ const SubsetSumCalculator: React.FC = () => {
         >
           开始分析最佳组合
         </Button>
-        <Divider orientation="left">计算结果 (小于等于预期值)</Divider>
+        <Divider titlePlacement="start">计算结果 (小于等于预期值)</Divider>
         {results.length > 0 ? (
           <List
             dataSource={results}
@@ -182,7 +182,7 @@ const SubsetSumCalculator: React.FC = () => {
                 {item.combinations.map((combo, cIdx) => (
                   <div key={cIdx}>
                     <Text type="secondary">#{cIdx + 1}</Text>
-                    <Divider type="vertical"></Divider>
+                    <Divider orientation="vertical"></Divider>
                     {combo.join(' + ')}
                   </div>
                 ))}

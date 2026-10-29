@@ -158,7 +158,7 @@ const Authentication = () => {
       >
         <Spin
           size="large"
-          tip={intl.formatMessage({
+          description={intl.formatMessage({
             id: socialRedirecting ? 'auth.redirecting' : 'auth.initializing',
           })}
         />

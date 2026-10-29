@@ -162,7 +162,7 @@ const DashboardBlog: React.FC = () => {
               <List.Item.Meta
                 title={blog.title}
                 description={
-                  <Space direction="vertical" size={0}>
+                  <Space orientation="vertical" size={0}>
                     <Typography.Paragraph
                       ellipsis={{ rows: 2 }}
                       style={{ marginBottom: 4 }}

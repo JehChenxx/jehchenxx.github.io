@@ -11,12 +11,12 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.3.7",
-    "@ant-design/pro-layout": "^7.19.0",
+    "@ant-design/icons": "^6.3.4",
+    "@ant-design/pro-components": "^3.1.15-8",
     "@supabase/supabase-js": "^2.97.0",
     "@types/lodash": "^4.17.1",
     "@types/three": "^0.186.0",
-    "antd": "^5.17.2",
+    "antd": "^6.6.8",
     "axios": "^1.6.8",
     "echarts": "^6.1.0",
     "echarts-for-react": "^3.0.6",

@@ -141,7 +141,9 @@ const SiteStats = () => {
               }
               value={daily}
               prefix={<EyeOutlined style={{ color: '#fff' }} />}
-              valueStyle={{ color: '#fff', fontSize: 36, fontWeight: 600 }}
+              styles={{
+                content: { color: '#fff', fontSize: 36, fontWeight: 600 },
+              }}
             />
           </Card>
         </Col>
@@ -160,7 +162,9 @@ const SiteStats = () => {
               }
               value={total}
               prefix={<ArrowUpOutlined style={{ color: '#fff' }} />}
-              valueStyle={{ color: '#fff', fontSize: 36, fontWeight: 600 }}
+              styles={{
+                content: { color: '#fff', fontSize: 36, fontWeight: 600 },
+              }}
             />
           </Card>
         </Col>

@@ -91,7 +91,7 @@ const AccountPage = () => {
           style={{ marginBottom: 16 }}
           type="info"
           showIcon
-          message={intl.formatMessage({ id: 'account.oauthHint' })}
+          title={intl.formatMessage({ id: 'account.oauthHint' })}
         />
       )}
 
@@ -99,28 +99,32 @@ const AccountPage = () => {
         title={intl.formatMessage({ id: 'account.basicInfo' })}
         style={{ marginBottom: 16 }}
       >
-        <Descriptions column={1} size="small">
-          <Descriptions.Item
-            label={intl.formatMessage({ id: 'account.email' })}
-          >
-            {user.email}
-          </Descriptions.Item>
-          <Descriptions.Item
-            label={intl.formatMessage({ id: 'account.userId' })}
-          >
-            {user.id}
-          </Descriptions.Item>
-          <Descriptions.Item
-            label={intl.formatMessage({ id: 'account.createdAt' })}
-          >
-            {formatDate(user.created_at)}
-          </Descriptions.Item>
-          <Descriptions.Item
-            label={intl.formatMessage({ id: 'account.lastSignIn' })}
-          >
-            {formatDate(user.last_sign_in_at)}
-          </Descriptions.Item>
-        </Descriptions>
+        <Descriptions
+          column={1}
+          size="small"
+          items={[
+            {
+              key: 'email',
+              label: intl.formatMessage({ id: 'account.email' }),
+              children: user.email,
+            },
+            {
+              key: 'userId',
+              label: intl.formatMessage({ id: 'account.userId' }),
+              children: user.id,
+            },
+            {
+              key: 'createdAt',
+              label: intl.formatMessage({ id: 'account.createdAt' }),
+              children: formatDate(user.created_at),
+            },
+            {
+              key: 'lastSignIn',
+              label: intl.formatMessage({ id: 'account.lastSignIn' }),
+              children: formatDate(user.last_sign_in_at),
+            },
+          ]}
+        />
       </Card>
 
       <Card

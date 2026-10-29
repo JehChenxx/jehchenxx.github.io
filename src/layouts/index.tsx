@@ -9,7 +9,7 @@ import Icon, {
   SunOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import ProLayout from '@ant-design/pro-layout';
+import { ProLayout } from '@ant-design/pro-components';
 import { Avatar, ConfigProvider, Dropdown, Modal, Tooltip, theme } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

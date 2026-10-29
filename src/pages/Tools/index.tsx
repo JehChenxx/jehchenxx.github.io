@@ -1,4 +1,4 @@
-import { Tabs } from 'antd/lib';
+import { Tabs } from 'antd';
 import React from 'react';
 import SubsetSumCalculator from './SubsetSumCalculator';
 
