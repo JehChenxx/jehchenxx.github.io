@@ -1,65 +1,40 @@
-﻿import supabase from '@/supabase/client';
+﻿import {
+  getDailyVisitHistory,
+  getVisitCounts,
+  type DailyVisitRow,
+} from '@/supabase/visitStats';
 import {
   ArrowUpOutlined,
   EyeOutlined,
   ReloadOutlined,
-  ThunderboltOutlined,
 } from '@ant-design/icons';
-import { Button, Card, Col, Row, Statistic } from 'antd';
+import { Button, Card, Col, Row, Spin, Statistic } from 'antd';
 import ReactECharts from 'echarts-for-react';
 import { useCallback, useEffect, useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 
-const DAYS = 30;
-
-type DailyRow = { date: string; count: number };
-
-const fillMissingDates = (rows: DailyRow[], days: number): DailyRow[] => {
-  const map = new Map(rows.map((r) => [r.date, r.count]));
-  const out: DailyRow[] = [];
-  const today = new Date();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    out.push({ date: key, count: map.get(key) ?? 0 });
-  }
-  return out;
-};
+const DAYS = 14;
 
 const SiteStats = () => {
   const { formatMessage } = useIntl();
+  const { user } = useModel('user');
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [daily, setDaily] = useState(0);
-  const [history, setHistory] = useState<DailyRow[]>([]);
+  const [history, setHistory] = useState<DailyVisitRow[]>([]);
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
-    try {
-      const [countRes, histRes] = await Promise.all([
-        supabase.rpc('get_visit_count'),
-        supabase.rpc('get_daily_visit_history', { days: DAYS }),
-      ]);
-      const countRow = Array.isArray(countRes.data)
-        ? countRes.data[0]
-        : (countRes.data as any);
-      if (countRow) {
-        setTotal(countRow.total ?? 0);
-        setDaily(countRow.daily ?? 0);
-      }
-      const list: DailyRow[] = Array.isArray(histRes.data)
-        ? histRes.data.map((r: any) => ({
-            date: r.visit_date,
-            count: r.visit_count,
-          }))
-        : [];
-      setHistory(fillMissingDates(list, DAYS));
-    } catch (err) {
-      console.error('site stats rpc failed:', err);
-    } finally {
-      setLoading(false);
+    const [counts, list] = await Promise.all([
+      getVisitCounts(),
+      getDailyVisitHistory(DAYS),
+    ]);
+    if (counts) {
+      setTotal(counts.total);
+      setDaily(counts.daily);
     }
+    setHistory(list);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -77,7 +52,7 @@ const SiteStats = () => {
     yAxis: { type: 'value', minInterval: 1 },
     series: [
       {
-        name: formatMessage({ id: 'siteStatus.dailyVisitCount' }),
+        name: formatMessage({ id: 'siteStatus.dailyVisitCountLabel' }),
         type: 'bar',
         data: history.map((r) => r.count),
         itemStyle: { color: '#1677ff', borderRadius: [3, 3, 0, 0] },
@@ -104,7 +79,7 @@ const SiteStats = () => {
     yAxis: { type: 'value', minInterval: 1 },
     series: [
       {
-        name: formatMessage({ id: 'siteStatus.visitCount' }),
+        name: formatMessage({ id: 'siteStatus.visitCountLabel' }),
         type: 'line',
         data: cumulative,
         smooth: true,
@@ -115,18 +90,42 @@ const SiteStats = () => {
     ],
   };
 
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: 80 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: 24, position: 'relative' }}>
-      <Row justify="end">
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+      }}
+    >
+      <Row justify="space-between" align="middle">
+        <Col>
+          <span style={{ color: 'rgba(0,0,0,0.45)', fontSize: 13 }}>
+            {formatMessage({ id: 'siteStatus.lastLogin' })}
+            {user?.last_sign_in_at
+              ? new Date(user.last_sign_in_at).toLocaleString()
+              : formatMessage({ id: 'siteStatus.notLoggedIn' })}
+          </span>
+        </Col>
         <Col>
           <Button
+            size="small"
             type="text"
             icon={<ReloadOutlined spin={loading} />}
             onClick={fetchStats}
           />
         </Col>
       </Row>
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]}>
         <Col xs={24} sm={12}>
           <Card
             variant="borderless"
@@ -137,21 +136,12 @@ const SiteStats = () => {
             <Statistic
               title={
                 <span style={{ color: '#fff' }}>
-                  {formatMessage({ id: 'siteStatus.dailyVisitCount' })}
+                  {formatMessage({ id: 'siteStatus.dailyVisitCountLabel' })}
                 </span>
               }
               value={daily}
-              prefix={<ThunderboltOutlined style={{ color: '#fff' }} />}
+              prefix={<EyeOutlined style={{ color: '#fff' }} />}
               valueStyle={{ color: '#fff', fontSize: 36, fontWeight: 600 }}
-              suffix={
-                <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 14 }}>
-                  {formatMessage({ id: 'siteStatus.visitCount' })
-                    .split('：')[0]
-                    .includes('Total')
-                    ? 'times'
-                    : '次'}
-                </span>
-              }
             />
           </Card>
         </Col>
@@ -165,7 +155,7 @@ const SiteStats = () => {
             <Statistic
               title={
                 <span style={{ color: '#fff' }}>
-                  {formatMessage({ id: 'siteStatus.visitCount' })}
+                  {formatMessage({ id: 'siteStatus.visitCountLabel' })}
                 </span>
               }
               value={total}
@@ -175,26 +165,34 @@ const SiteStats = () => {
           </Card>
         </Col>
       </Row>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={12}>
+      <Row gutter={[16, 16]} style={{ flex: 1, minHeight: 0 }}>
+        <Col xs={24} lg={12} style={{ height: '100%' }}>
           <Card
-            loading={loading}
-            title={formatMessage({ id: 'siteStatus.dailyVisitCount' })}
+            title={formatMessage({ id: 'siteStatus.dailyVisitCountLabel' })}
             extra={<EyeOutlined />}
+            style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            styles={{ body: { flex: 1, minHeight: 0, padding: 16 } }}
           >
-            <ReactECharts option={barOption} style={{ height: 320 }} notMerge />
+            <ReactECharts
+              option={barOption}
+              style={{ height: '100%' }}
+              notMerge
+              autoResize
+            />
           </Card>
         </Col>
-        <Col xs={24} lg={12}>
+        <Col xs={24} lg={12} style={{ height: '100%' }}>
           <Card
-            loading={loading}
-            title={formatMessage({ id: 'siteStatus.visitCount' })}
+            title={formatMessage({ id: 'siteStatus.visitCountLabel' })}
             extra={<ArrowUpOutlined />}
+            style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+            styles={{ body: { flex: 1, minHeight: 0, padding: 16 } }}
           >
             <ReactECharts
               option={lineOption}
-              style={{ height: 320 }}
+              style={{ height: '100%' }}
               notMerge
+              autoResize
             />
           </Card>
         </Col>

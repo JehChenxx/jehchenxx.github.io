@@ -11,7 +11,7 @@ import Icon, {
 } from '@ant-design/icons';
 import ProLayout from '@ant-design/pro-layout';
 import { Avatar, ConfigProvider, Dropdown, Modal, Tooltip, theme } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Link,
   Outlet,
@@ -34,6 +34,7 @@ export default function Layout() {
   const { user } = useModel('user');
   const [visitCount, setVisitCount] = useState<number | null>(null);
   const [dailyCount, setDailyCount] = useState<number | null>(null);
+  const hasTracked = useRef(false);
 
   const WELCOME_COUNT = 8;
   const welcomeIndex = useMemo(
@@ -42,14 +43,15 @@ export default function Layout() {
   );
 
   useEffect(() => {
-    if (location.pathname !== '/') return;
+    if (hasTracked.current) return;
+    hasTracked.current = true;
     trackVisit().then((counts) => {
       if (counts) {
         setVisitCount(counts.total);
         setDailyCount(counts.daily);
       }
     });
-  }, [location.pathname]);
+  }, []);
 
   const algorithm = useMemo(
     () => [

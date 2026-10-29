@@ -56,6 +56,8 @@ const DashboardLayout: React.FC = () => {
         position: 'relative',
         height: '100%',
         overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* 背景层：纯 mask-image 实现圆角矩形 + 全边缘渐隐虚化，filter 做模糊 */}
@@ -78,7 +80,10 @@ const DashboardLayout: React.FC = () => {
       />
 
       {/* 右上角悬浮文本按钮组 */}
-      <Row justify="end">
+      <Row
+        justify="end"
+        style={{ flexShrink: 0, position: 'relative', zIndex: 2 }}
+      >
         <Col>
           {tabs.map((t) => (
             <Button
@@ -107,7 +112,8 @@ const DashboardLayout: React.FC = () => {
         style={{
           position: 'relative',
           zIndex: 2,
-          height: '100%',
+          flex: 1,
+          minHeight: 0,
           overflowY: 'auto',
           scrollBehavior: 'smooth',
         }}

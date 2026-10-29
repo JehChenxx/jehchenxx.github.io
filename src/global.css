@@ -28,15 +28,15 @@ body,
   display: flex;
   flex-direction: column;
   padding-block: 0 !important;
-  padding-inline: 0 !important;
+  padding-inline: 24px !important;
+  box-sizing: border-box;
 }
 
-/* 隐藏所有滚动条（保留滚动功能） */
-* {
+.hide-scrollbar {
   scrollbar-width: none;          /* Firefox */
   -ms-overflow-style: none;       /* IE/Edge Legacy */
 }
-*::-webkit-scrollbar {
+.hide-scrollbar::-webkit-scrollbar {
   display: none;                  /* Chrome/Safari/Edge Chromium */
   width: 0;
   height: 0;

@@ -1,3 +1,4 @@
+import { Blog, blogApi } from '@/supabase/dashboard';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -20,7 +21,6 @@ import {
 } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import { Blog, blogApi } from '@/supabase/dashboard';
 
 const DashboardBlog: React.FC = () => {
   const intl = useIntl();
@@ -67,10 +67,20 @@ const DashboardBlog: React.FC = () => {
     setSaving(true);
     try {
       if (editing) {
-        const updated = await blogApi.update(editing.id, values.title, values.content);
-        setBlogs((prev) => prev.map((b) => (b.id === updated.id ? updated : b)));
+        const updated = await blogApi.update(
+          editing.id,
+          values.title,
+          values.content,
+        );
+        setBlogs((prev) =>
+          prev.map((b) => (b.id === updated.id ? updated : b)),
+        );
       } else {
-        const created = await blogApi.create(user.id, values.title, values.content);
+        const created = await blogApi.create(
+          user.id,
+          values.title,
+          values.content,
+        );
         setBlogs((prev) => [created, ...prev]);
       }
       message.success(intl.formatMessage({ id: 'dashboard.blog.saved' }));
@@ -95,7 +105,7 @@ const DashboardBlog: React.FC = () => {
   const formatDate = (iso: string) => new Date(iso).toLocaleString();
 
   return (
-    <div style={{ padding: 24 }}>
+    <div>
       <Card
         title={
           <Space>
@@ -160,7 +170,6 @@ const DashboardBlog: React.FC = () => {
                       {blog.content || '(empty)'}
                     </Typography.Paragraph>
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {intl.formatMessage({ id: 'dashboard.blog.editor.title' })}:{' '}
                       {formatDate(blog.updated_at)}
                     </Typography.Text>
                   </Space>
@@ -184,7 +193,7 @@ const DashboardBlog: React.FC = () => {
         okText={intl.formatMessage({ id: 'dashboard.blog.editor.save' })}
         cancelText={intl.formatMessage({ id: 'dashboard.blog.editor.cancel' })}
         width={720}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" requiredMark={false}>
           <Form.Item

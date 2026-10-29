@@ -110,8 +110,8 @@ const DashboardHome: React.FC = () => {
   const doneCount = todos.filter((t) => t.done).length;
 
   return (
-    <Row justify="end" style={{ height: '100%' }}>
-      <Col span={6} style={{ height: '100%', display: 'flex' }}>
+    <Row justify="end" style={{ height: '100%', minHeight: 0, padding: 16 }}>
+      <Col span={6} style={{ height: '100%', display: 'flex', minHeight: 0 }}>
         <Card
           variant="borderless"
           title={
@@ -134,14 +134,15 @@ const DashboardHome: React.FC = () => {
             WebkitBackdropFilter: 'blur(12px)',
             position: 'relative',
             flex: 1,
+            minHeight: 0,
             display: 'flex',
             flexDirection: 'column',
           }}
-          bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column' }}
           styles={{
             body: {
               background: 'transparent',
               flex: 1,
+              minHeight: 0,
               display: 'flex',
               flexDirection: 'column',
             },
@@ -180,6 +181,7 @@ const DashboardHome: React.FC = () => {
           <div
             ref={listRef}
             onScroll={checkOverflow}
+            className="hide-scrollbar"
             style={{
               flex: 1,
               minHeight: 0,
