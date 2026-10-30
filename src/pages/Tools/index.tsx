@@ -1,13 +1,17 @@
 import { Tabs } from 'antd';
 import React from 'react';
+import { useIntl } from 'umi';
 import SubsetSumCalculator from './SubsetSumCalculator';
 
 const Index = () => {
+  const intl = useIntl();
   return (
     <Tabs
       items={[
         {
-          label: '小于等于最接近计算器',
+          label: intl.formatMessage({
+            id: 'tools.lessThanEqualToNearestCalculator',
+          }),
           key: 'subsetSumCalculator',
           children: <SubsetSumCalculator></SubsetSumCalculator>,
         },

@@ -1,0 +1,17 @@
+export default {
+  'tools.lessThanEqualToNearestCalculator': '小于等于最接近计算器',
+  'tools.rawData.label': '待选数字集合（空格/中文逗号/英文逗号分隔）',
+  'tools.rawData.placeholder': '请输入数字，支持逗号、空格或换行分隔',
+  'tools.goal.label': '目标预期',
+  'tools.goal.placeholder': '例如：725, 700 680',
+  'tools.goal.hint': '多个用英文逗号、中文逗号或空格分隔',
+  'tools.topN.label': '结果方案数（TopN）',
+  'tools.maxCombo.label': '每种金额最大组合数',
+  'tools.calculate': '开始分析最佳组合',
+  'tools.result.title': '计算结果（不超过目标值）',
+  'tools.result.goal': '目标：{goal}',
+  'tools.result.diff': '差距：{diff}',
+  'tools.result.sum': '总和：{sum}',
+  'tools.result.noMatch': '没有不超过该目标值的组合',
+  'tools.empty': '暂无数据，请点击上方按钮开始计算',
+};
