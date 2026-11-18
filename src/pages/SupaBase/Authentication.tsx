@@ -6,7 +6,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Button, Divider, Form, Input, Spin, Typography, message } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { history, useIntl } from 'umi';
 
 type AuthView =
@@ -25,45 +25,55 @@ const Authentication = () => {
   const [socialRedirecting, setSocialRedirecting] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [form] = Form.useForm();
+  const recoveryRef = useRef(false);
 
   useEffect(() => {
-    // mount 时同步处理三种入口状态，避免 OAuth 回调回来先闪表单再跳转
-    const hash = window.location.hash;
-    const url = new URL(
-      hash.startsWith('#') ? hash.slice(1) : hash,
-      window.location.origin,
-    );
-    const type = url.searchParams.get('type');
+    const hashParams = new URLSearchParams(window.location.hash.slice(1));
+    const queryParams = new URLSearchParams(window.location.search);
+    const recoveryCallback =
+      hashParams.get('type') === 'recovery' ||
+      queryParams.get('type') === 'recovery';
+    const hasAuthCallback =
+      recoveryCallback ||
+      hashParams.has('access_token') ||
+      queryParams.has('code');
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (type === 'recovery') {
-        setView('update_password');
-      } else if (session) {
-        // OAuth / callback 回来 session 已经在了，直接走路由跳转，不等 onAuthStateChange
-        history.push('/dashboard');
-        return;
-      }
+    const enterRecovery = () => {
+      recoveryRef.current = true;
+      setView('update_password');
       setInitializing(false);
-    });
-  }, []);
-
-  useEffect(() => {
-    const isRecovery = () => {
-      const hash = window.location.hash;
-      const url = new URL(
-        hash.startsWith('#') ? hash.slice(1) : hash,
-        window.location.origin,
-      );
-      return url.searchParams.get('type') === 'recovery';
     };
+
+    if (recoveryCallback) {
+      recoveryRef.current = true;
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (event === 'SIGNED_IN' && session && !isRecovery()) {
+        if (event === 'PASSWORD_RECOVERY') {
+          enterRecovery();
+          return;
+        }
+        if (event === 'SIGNED_IN' && session && !recoveryRef.current) {
           history.push('/dashboard');
         }
       },
     );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (recoveryRef.current) {
+        enterRecovery();
+        return;
+      }
+      if (!session) {
+        setInitializing(false);
+        return;
+      }
+      // auth 回调会随后触发 SIGNED_IN 或 PASSWORD_RECOVERY，不能提前按普通会话跳转
+      if (!hasAuthCallback) {
+        history.push('/dashboard');
+      }
+    });
 
     return () => {
       authListener.subscription.unsubscribe();
@@ -103,12 +113,19 @@ const Authentication = () => {
           password: values.password!,
         });
         if (error) throw error;
+        const { error: signOutError } = await supabase.auth.signOut();
+        if (signOutError) throw signOutError;
         message.success(intl.formatMessage({ id: 'auth.passwordUpdated' }));
+        recoveryRef.current = false;
         setView('sign_in');
         form.resetFields();
       }
     } catch (err: any) {
-      message.error(err?.message || 'Unknown error');
+      message.error(
+        err?.code === 'over_email_send_rate_limit'
+          ? intl.formatMessage({ id: 'auth.emailRateLimit' })
+          : err?.message || 'Unknown error',
+      );
     } finally {
       setSubmitting(false);
     }

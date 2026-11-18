@@ -22,6 +22,8 @@ export default {
   'auth.confirmation':
     'Sign up successful! Please check your email to confirm.',
   'auth.sentResetLink': 'Reset link sent. Please check your email.',
+  'auth.emailRateLimit':
+    'Too many emails sent. Please wait at least 1 hour before trying again.',
   'auth.passwordUpdated': 'Password updated.',
   'auth.or': 'Or use email',
   'auth.passwordMin': 'Password must be at least 6 characters',

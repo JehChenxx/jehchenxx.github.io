@@ -13,7 +13,8 @@ import ReactECharts from 'echarts-for-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 
-const DAYS = 14;
+const BAR_DAYS = 14;
+const TOTAL_DAYS = 30;
 
 const SiteStats = () => {
   const { formatMessage } = useIntl();
@@ -27,12 +28,12 @@ const SiteStats = () => {
     setLoading(true);
     const [counts, list] = await Promise.all([
       getVisitCounts(),
-      getDailyVisitHistory(DAYS),
+      getDailyVisitHistory(TOTAL_DAYS),
     ]);
     if (counts) {
-      setTotal(counts.total);
       setDaily(counts.daily);
     }
+    setTotal(list.reduce((sum, r) => sum + r.count, 0));
     setHistory(list);
     setLoading(false);
   }, []);
@@ -41,12 +42,14 @@ const SiteStats = () => {
     fetchStats();
   }, [fetchStats]);
 
+  const barHistory = history.slice(-BAR_DAYS);
+
   const barOption = {
     tooltip: { trigger: 'axis' },
     grid: { left: 40, right: 16, top: 24, bottom: 36 },
     xAxis: {
       type: 'category',
-      data: history.map((r) => r.date.slice(5)),
+      data: barHistory.map((r) => r.date.slice(5)),
       axisLabel: { rotate: 45, fontSize: 11 },
     },
     yAxis: { type: 'value', minInterval: 1 },
@@ -54,7 +57,7 @@ const SiteStats = () => {
       {
         name: formatMessage({ id: 'siteStatus.dailyVisitCountLabel' }),
         type: 'bar',
-        data: history.map((r) => r.count),
+        data: barHistory.map((r) => r.count),
         itemStyle: { color: '#1677ff', borderRadius: [3, 3, 0, 0] },
       },
     ],

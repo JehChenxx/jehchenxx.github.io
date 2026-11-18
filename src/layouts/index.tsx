@@ -191,7 +191,7 @@ export default function Layout() {
         >
           {dailyCount != null &&
             formatMessage(
-              { id: 'siteStatus.dailyVisitCount' },
+              { id: 'siteStatus.todayVisitCount' },
               { count: dailyCount },
             )}
           <br></br>

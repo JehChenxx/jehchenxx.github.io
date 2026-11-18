@@ -21,6 +21,7 @@ export default {
   'auth.updatingPassword': '更新中...',
   'auth.confirmation': '注册成功，请查收验证邮件',
   'auth.sentResetLink': '重置链接已发送，请查收邮件',
+  'auth.emailRateLimit': '邮件发送过于频繁，请至少等待 1 小时后再试',
   'auth.passwordUpdated': '密码已更新',
   'auth.or': '或使用邮箱',
   'auth.passwordMin': '密码至少 6 位',
